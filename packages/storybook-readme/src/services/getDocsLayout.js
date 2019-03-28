@@ -12,7 +12,7 @@ import {
   LAYOUT_TYPE_FOOTER_MD,
 } from '../const';
 
-function split(md, story) {
+function split(md, story, components) {
   return md
     .split(/<!--\s|\s-->/)
     .filter(p => p.trim().length !== 0)
@@ -29,6 +29,7 @@ function split(md, story) {
             type: LAYOUT_TYPE_PROPS_TABLE,
             content: getPropsTables({
               story,
+              components
             }),
           };
 
@@ -46,17 +47,17 @@ function processMd(md) {
   return marked(transformEmojis(md));
 }
 
-export default function getDocsLayout({ md, story }) {
+export default function getDocsLayout({ md, story, components }) {
   const mdAsArray = Array.isArray(md) ? [...md] : [md];
   // const mdWithEmojis = mdAsArray.map(md => transformEmojis(md));
   const mdWithEmojis = mdAsArray.map(processMd);
 
   const main = mdWithEmojis[0];
 
-  const layout = [...split(main, story)];
+  const layout = [...split(main, story, components)];
 
   mdWithEmojis.slice(1).map(md => {
-    layout.push(...split(md, story));
+    layout.push(...split(md, story, components));
   });
 
   if (layout.findIndex(p => p.type === LAYOUT_TYPE_STORY) === -1) {

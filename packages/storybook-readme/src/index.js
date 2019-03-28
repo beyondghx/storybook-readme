@@ -39,6 +39,7 @@ export const addReadme = makeDecorator({
     const layout = parameters.layout
       ? parameters.layout
       : getDocsLayout({
+          ...parameters,
           footer: parameters.footer || '',
           header: parameters.header || '',
           md: parameters.content || '',
@@ -49,6 +50,7 @@ export const addReadme = makeDecorator({
 
     if (parameters.sidebar) {
       const sidebarLayout = getDocsLayout({
+        ...parameters,
         footer: parameters.footer || '',
         header: parameters.header || '',
         md: parameters.sidebar,

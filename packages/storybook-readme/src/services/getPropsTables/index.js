@@ -26,7 +26,7 @@ const getMarkdown = ({ type, name }) => {
 /**
  * Copied from @storybook/addon-info
  */
-export default function getPropsTables({ story, config = {} }) {
+export default function getPropsTables({ story, config = {}, components }) {
   const types = new Map();
 
   const {
@@ -37,7 +37,7 @@ export default function getPropsTables({ story, config = {} }) {
     // excludedPropTypes,
   } = config;
 
-  if (!story) {
+  if (!story && !components) {
     return null;
   }
 
@@ -67,7 +67,7 @@ export default function getPropsTables({ story, config = {} }) {
   };
 
   // extract components from children
-  extract(story);
+  extract(components || story);
 
   const array = Array.from(types.keys());
   array.sort((a, b) => (getName(a) > getName(b) ? 1 : -1));
