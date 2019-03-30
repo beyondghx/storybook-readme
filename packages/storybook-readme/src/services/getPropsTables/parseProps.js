@@ -14,6 +14,21 @@ const isNotEmpty = obj => obj && obj.props && Object.keys(obj.props).length > 0;
 
 const hasDocgen = type => isNotEmpty(type.__docgenInfo);
 
+const propsParser = (docgenInfoProp = {}) => {
+  if (docgenInfoProp.flowType) return docgenInfoProp.flowType
+  if (docgenInfoProp.type) {
+    let { name, value } = docgenInfoProp.type
+    if (typeof value === 'object') value = 'object' // resolve typeof object
+    return `${name}${value ? ': ' + value : ''}`
+  }
+  return 'other'
+}
+
+const defaultValParser = defaultVal => {
+  // resolve defaultValue like "{\n  a: true,\n  b: true\n}"
+  if (defaultVal.value) return defaultVal.value.replace(/\n/ig, '')
+}
+
 const propsFromDocgen = type => {
   const props = {};
   const docgenInfoProps = type.__docgenInfo.props;
@@ -21,14 +36,15 @@ const propsFromDocgen = type => {
   Object.keys(docgenInfoProps).forEach(property => {
     const docgenInfoProp = docgenInfoProps[property];
     const defaultValueDesc = docgenInfoProp.defaultValue || {};
-    const propType = docgenInfoProp.flowType || (docgenInfoProp.type && docgenInfoProp.type.name) || 'other';
+    const propType = propsParser(docgenInfoProp);
+    const defaultValue = defaultValParser(defaultValueDesc);
 
     props[property] = {
       property,
       propType,
       required: docgenInfoProp.required,
       description: docgenInfoProp.description,
-      defaultValue: defaultValueDesc.value,
+      defaultValue: defaultValue,
     };
   });
 
