@@ -29,6 +29,11 @@ const defaultValParser = defaultVal => {
   if (defaultVal.value) return defaultVal.value.replace(/\n/ig, '')
 }
 
+const descriptionParser = description => {
+  // resolve description with new line
+  if (description) return description.replace(/\n/ig, ' ')
+}
+
 const propsFromDocgen = type => {
   const props = {};
   const docgenInfoProps = type.__docgenInfo.props;
@@ -38,12 +43,13 @@ const propsFromDocgen = type => {
     const defaultValueDesc = docgenInfoProp.defaultValue || {};
     const propType = propsParser(docgenInfoProp);
     const defaultValue = defaultValParser(defaultValueDesc);
+    const description = descriptionParser(docgenInfoProp.description);
 
     props[property] = {
       property,
       propType,
       required: docgenInfoProp.required,
-      description: docgenInfoProp.description,
+      description: description,
       defaultValue: defaultValue,
     };
   });
